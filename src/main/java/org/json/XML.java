@@ -556,6 +556,41 @@ public class XML {
                 || val.indexOf('E') > -1 || "-0".equals(val);
     }
 
+    
+    /**
+     * SWE 262P Milestone2, Task 2
+     * Read an XML file into a JSON object, and extract some smaller sub-object inside, 
+     * given a certain path (use JSONPointer). 
+     * Write that smaller object to disk as a JSON file.
+     * Being this done inside the library, you should be able to do it more efficiently. 
+     * Specifically, you shouldn't need to read the entire XML file, as you can stop parsing it as soon as you find the object in question.
+     */
+    public static JSONObject toJSONObject(Reader reader, JSONPointer path) {
+    	JSONObject jo = new JSONObject();
+        XMLTokener x = new XMLTokener(reader);
+        while (x.more()) {
+            x.skipPast("<");
+            if(x.more()) {
+                parse(x, jo, null, XMLParserConfiguration.ORIGINAL);
+            }
+        }
+        Object query = jo.query(path);
+//        System.out.println("Query : " + query);
+        return (JSONObject) query;
+    }
+    
+    
+
+    /**
+     * SWE262P Milestone2, Task 5
+     * Read an XML file into a JSON object, 
+     * replace a sub-object on a certain key path with another JSON object that you construct, 
+     * then write the result on disk as a JSON file
+     */
+    public static JSONObject toJSONObject(Reader reader, JSONPointer path, JSONObject replacement) {
+    	return null;
+    }
+    
 
     /**
      * Convert a well-formed (but not necessarily valid) XML string into a
