@@ -1077,8 +1077,8 @@ public class XMLTest {
      */
     
     /*
-     * key path contains json array index
-     * expect a JSONObject
+     * Given key path contains json array index
+     * Expect a JSONObject
      */
     @Test
 	public void Task2LeavesTest(){
@@ -1103,8 +1103,8 @@ public class XMLTest {
     
     
     /*
-     * key path contains json array
-     * expect a JSONObject with value as jason array
+     * Given a key path contains json array
+     * Expect a JSONObject with its value being a jason array
      */
     @Test
 	public void Task2JsonArrayTest(){
@@ -1130,8 +1130,8 @@ public class XMLTest {
 	}
 	
     /*
-     * empty key path
-     * expect an exception message : "Error: empty key path"
+     * Given an empty key path
+     * Expect an exception message : "Error: empty key path"
      */
 	@Test 
 	public void Task2EmptyPath() {
@@ -1153,8 +1153,8 @@ public class XMLTest {
 	}
 	
 	/*
-     * not existing key path
-     * expect "not exist Object"
+     * Given : non existing key path
+     * Expect return :  "not exist Object"
      */
     @Test
 	public void Task2NotExistTest(){
