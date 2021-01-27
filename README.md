@@ -1,6 +1,6 @@
 # 262P Milestone 2
 
-Code modifications are in XML.java from line#875 to the end (task2 starts at line#875, task5 starts at line#1002). Unit Tests are in XMLTest.java from line#1075 to the end (total 7 test cases, 4 for task2, 3 for task5).
+Code modifications are in XML.java from line#875 to the end (task2 starts at line#875, task5 starts at line#1021). Unit Tests are in XMLTest.java from line#1075 to the end (total 7 test cases, 4 for task2, 3 for task5).
 
 ## Task2 (part1)
 
