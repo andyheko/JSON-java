@@ -1,5 +1,8 @@
 package org.json;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+
 /*
 Copyright (c) 2015 JSON.org
 
@@ -29,7 +32,12 @@ import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.Stack;
 
 
 /**
@@ -272,8 +280,13 @@ public class XML {
         // <>
         // <=
         // <<
-
+        
+        // 
         token = x.nextToken();
+//        System.out.println("inside parse token : " + token);
+//        if (token.toString().equals(name)) {
+//        	System.out.println("Found tag stop");
+//        }
 
         // <!
 
@@ -556,40 +569,6 @@ public class XML {
                 || val.indexOf('E') > -1 || "-0".equals(val);
     }
 
-    
-    /**
-     * SWE 262P Milestone2, Task 2
-     * Read an XML file into a JSON object, and extract some smaller sub-object inside, 
-     * given a certain path (use JSONPointer). 
-     * Write that smaller object to disk as a JSON file.
-     * Being this done inside the library, you should be able to do it more efficiently. 
-     * Specifically, you shouldn't need to read the entire XML file, as you can stop parsing it as soon as you find the object in question.
-     */
-    public static JSONObject toJSONObject(Reader reader, JSONPointer path) {
-    	JSONObject jo = new JSONObject();
-        XMLTokener x = new XMLTokener(reader);
-        while (x.more()) {
-            x.skipPast("<");
-            if(x.more()) {
-                parse(x, jo, null, XMLParserConfiguration.ORIGINAL);
-            }
-        }
-        Object query = jo.query(path);
-//        System.out.println("Query : " + query);
-        return (JSONObject) query;
-    }
-    
-    
-
-    /**
-     * SWE262P Milestone2, Task 5
-     * Read an XML file into a JSON object, 
-     * replace a sub-object on a certain key path with another JSON object that you construct, 
-     * then write the result on disk as a JSON file
-     */
-    public static JSONObject toJSONObject(Reader reader, JSONPointer path, JSONObject replacement) {
-    	return null;
-    }
     
 
     /**
@@ -891,5 +870,243 @@ public class XML {
                 : (string.length() == 0) ? "<" + tagName + "/>" : "<" + tagName
                         + ">" + string + "</" + tagName + ">";
 
+    }
+    
+    /*
+     * SWE 262P Milestone2
+     * Group members : Hao-En Ko, Zitian Li
+     */
+    
+    /**
+     * SWE 262P Milestone2, Task 2, done by Hao-En Ko
+     * Given a certain path (use JSONPointer)
+     * Read an XML file into a JSON object, and extract some smaller sub-object inside
+     * Write that smaller object to disk as a JSON file.
+     * 
+     * Being this done inside the library, you should be able to do it more efficiently. 
+     * Specifically, you shouldn't need to read the entire XML file, as you can stop parsing it as soon as you find the object in question.
+     *
+     * if found key, stop parsing at key close bracket
+     * return subObject as a JSONObject containing key and its value
+     * throw exception if key not found in XML
+     * @throws Exception 
+     */
+    public static JSONObject toJSONObject(Reader reader, JSONPointer path) throws Exception {
+    	
+    	JSONObject jo;
+    	XMLTokener x = new XMLTokener(reader);
+    	String content; // current token's content
+    	ArrayList<String> currentList = new ArrayList<>(); // list of keys to current path
+    	ArrayList<String> goalList = new ArrayList<>(); // list of keys to goal path
+    	goalList.addAll(Arrays.asList(path.toString().split("/")));
+    	goalList.remove(0);
+    	System.out.println("goalList : " + goalList);
+    	HashMap<String, Integer> idxMap = new HashMap<>(); // store key of json array and array idex
+    	
+    	if (goalList.size() == 0) {
+    		throw new Exception("Error: empty key path");
+    	}
+    	
+    	boolean isKeyFound = false;
+    	boolean isJsonArray = false;
+    	StringBuilder xmlString = new StringBuilder(); // current output xml string
+    	
+    	while (x.more()) {
+    		content = x.nextContent().toString();
+//    		System.out.println("content : " + content);
+    		
+    		// skip content starts with "?"
+    		if (content.startsWith("?")) {
+    			if (xmlString.length() > 0 && xmlString.substring(xmlString.length()-1).equals("<")) {
+//    				System.out.println(xmlString.charAt(xmlString.length()-1));
+    				xmlString.deleteCharAt(xmlString.length()-1);  				
+    			}
+    			continue; // skip
+    		}
+    		
+    		// open tag, add key to currentList
+    		if (content.contains(">") && !content.startsWith("/")) {
+    			// dealt with json array
+    			if (content.split(" ").length > 1 && content.contains("id=")) {
+    				currentList.add(content.split(" ")[0]);
+    				if (currentList.equals(goalList)) {
+    					isJsonArray = true;
+    				}
+    				if (idxMap.containsKey(content.split(" ")[0])) {
+    					idxMap.put(content.split(" ")[0], idxMap.get(content.split(" ")[0])+1);
+    					currentList.add(String.valueOf(idxMap.get(content.split(" ")[0])));
+    				} else {
+    					idxMap.put(content.split(" ")[0], 0);
+    					currentList.add(String.valueOf(idxMap.get(content.split(" ")[0])));
+    				}
+    				
+    			} else {
+    				currentList.add(content.substring(0, content.indexOf(">")));
+    			}
+
+    		}
+    		
+    		// close tag
+    		if (content.contains(">") && content.startsWith("/")) {
+    			// break at the end of json array
+    			if (isJsonArray && !goalList.get(goalList.size()-1).equals(content.substring(1, content.length()-1)) && currentList.size() < goalList.size()) {
+    				break;
+    			}
+    			// break at goal key close tag 
+    			if (goalList.get(goalList.size()-1).equals(content.substring(1, content.length()-1)) && isKeyFound && currentList.equals(goalList)) {
+    				xmlString.append(content);
+    				break;
+    			}
+    			
+    			if (currentList.size() > 0) {
+    				// dealt with json array
+    				if (currentList.get(currentList.size()-1).matches("[0-9]+")) {
+    					currentList.remove(currentList.size()-1);
+    					currentList.remove(currentList.size()-1);
+    				} else { // regular
+    					currentList.remove(currentList.size()-1);
+    				}
+    			}
+    			
+    		}
+//    		System.out.println(currentList);
+    		// find goal key, start xmlString append
+    		if (!isKeyFound && currentList.equals(goalList)) {
+    			isKeyFound = true;
+    			xmlString.append("<");
+    		}
+    		// keep append after isKeyFound or is JsonArray
+    		if (isKeyFound || isJsonArray) {
+    			xmlString.append(content);
+    		}
+
+
+    		
+    		
+    	}
+//    	System.out.println("XML : " + xmlString);
+    	if (xmlString.toString().equals("")) {
+    		throw new Exception("not exist Object");
+    	}
+    	String outputString = "";
+    	// json array string
+    	if (!xmlString.toString().startsWith("<")) {
+    		outputString = xmlString.toString().substring(xmlString.length()-1) + xmlString.toString().substring(0, xmlString.length()-1);
+    	} else { // regular
+    		outputString = xmlString.toString();
+    	}
+//    	System.out.println("output : " + outputString);
+    	jo = toJSONObject(outputString);
+    	reader.close();
+        return jo;
+    }
+    
+//public static JSONObject toJSONObjectOrigin(Reader reader, JSONPointer path) {
+//    	
+//    	JSONObject jo = new JSONObject();
+//        XMLTokener x = new XMLTokener(reader);
+//      while (x.more()) { 
+//          x.skipPast("<");
+//          if(x.more()) {
+//          	System.out.println("x : " + x);
+//      		parse(x, jo, null, XMLParserConfiguration.ORIGINAL);
+//          }
+//      }
+//        System.out.println(jo);
+//        return jo;
+//    }
+    
+    
+
+    /**
+     * SWE262P Milestone2, Task 5, done by Zitian Li
+     */
+    /**
+     * XML to Json function
+     * Read an XML file into a JSON object 
+     * Replace a sub-object on a certain key path with another JSON object that you construct.
+     * then write the result on disk as a JSON file
+     * 
+     * @param reader 
+     * 			A FileReader
+     * @param path
+     * 			A JSONPointer certain key path
+     * @param replacement
+     * 			The JSONObject which wants to replace with orignal file
+     * @return A JSONObject
+     * @throws IOException JSONException
+     */
+    
+    public static JSONObject toJsonobject(Reader reader, JSONPointer path, JSONObject replacement) throws IOException, JSONException {
+    	JSONObject jo = new JSONObject();
+    	BufferedReader bufferedReader = new BufferedReader(reader);
+    	
+    	Stack<String> xml_Tag = new Stack<String>();
+    	
+    	String line = bufferedReader.readLine();
+    	
+    	String xmlString  = "";
+    	
+    	boolean ObjectFound = true;
+    	
+    	while (line != null) {
+    		if (line.startsWith("<") && line.endsWith(">")) {
+    			if (line.startsWith("/",1)) {
+	    			xmlString += line;
+	    			String check = xml_Tag.pop();
+	    			//System.out.println(check);
+    			
+    				//System.out.println(1);
+    				jo = toJSONObject(xmlString);
+    				JSONObject subObject = null;
+    				
+    				subObject = (JSONObject) path.queryFrom(jo);
+    				
+    				if (subObject != null) {    		
+    					ObjectFound = true;
+
+    					Set<String> keys = subObject.keySet();
+    					Set<String> replacekeys = replacement.keySet();
+    					//System.out.println(replacekeys.toString());
+    					//System.out.println(keys.toString());
+    					boolean notFound = true;
+    					
+    					for (String l : replacekeys) {
+    						for (String i : keys) {
+    							if (i.equals(l)) {
+    								subObject.put(i, replacement.get(l));
+    								notFound = false;
+    							}
+    						}
+    						
+    						if (notFound) {
+    							throw new JSONException("Key Not Found Error. The value of key " + l + " not been successfully replaced!");
+    						}
+    					}
+    				return jo;
+    				}
+    				else {
+    					ObjectFound = false;
+    					xmlString = "";
+    					line = bufferedReader.readLine();
+    					continue;
+    				}
+    			}
+    			
+    			xml_Tag.push(line);
+    			xmlString += line;
+    			
+    		}else {
+    			xmlString += line;
+    		}
+    		
+    		line = bufferedReader.readLine();
+    		
+    		
+    	}
+    	if (!ObjectFound) {
+    		throw new JSONException("Error! Sub-Object not found!");
+    	}
+    	return jo;
     }
 }

@@ -31,6 +31,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -44,6 +45,7 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONPointer;
 import org.json.JSONTokener;
 import org.json.XML;
 import org.json.XMLParserConfiguration;
@@ -1068,4 +1070,233 @@ public class XMLTest {
             fail("Expected to be unable to modify the config");
         } catch (Exception ignored) { }
     }
+    
+    
+    /*
+     * Test Cases for Milestone 2, task2
+     */
+    
+    /*
+     * key path contains json array index
+     * expect a JSONObject
+     */
+    @Test
+	public void Task2LeavesTest(){
+		// Given
+		FileReader fileReader;
+		try {
+			//fileReader = new FileReader("/Users/andyko/Documents/GitHub/262p-milestone2/JSON-java/src/test/java/org/json/junit/xmls/Sample.xml");
+			fileReader = new FileReader("./src/test/java/org/json/junit/xmls/Sample.xml");
+			JSONPointer jsonPointer = new JSONPointer("/catalog/book/0/author");
+			
+			// When
+			JSONObject jsonObject = XML.toJSONObject(fileReader, jsonPointer);
+			
+			// Then
+//			System.out.println(jsonObject);
+			assertEquals(jsonObject.toString(), "{\"author\":\"Gambardella, Matthew\"}");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+    
+    
+    /*
+     * key path contains json array
+     * expect a JSONObject with value as jason array
+     */
+    @Test
+	public void Task2JsonArrayTest(){
+    	// Given
+		FileReader fileReader;
+		try {
+			fileReader = new FileReader("./src/test/java/org/json/junit/xmls/Sample.xml");
+			JSONPointer jsonPointer = new JSONPointer("/catalog/book");
+			
+			// When
+			JSONObject jsonObject = XML.toJSONObject(fileReader, jsonPointer);
+			
+			// Then
+			System.out.println(jsonObject);
+			assertEquals(jsonObject.toString(), "{\"book\":[{\"author\":\"Gambardella, Matthew\",\"price\":44.95,\"genre\":\"Computer\",\"description\":\"An in-depth look at creating applications with XML.\",\"id\":\"bk101\",\"title\":\"XML Developer's Guide\",\"publish_date\":\"2000-10-01\"},{\"author\":\"Ralls, Kim\",\"price\":5.95,\"genre\":\"Fantasy\",\"description\":\"A former architect battles corporate zombies,an evil sorceress, and her own childhood to become queen of the world.\",\"id\":\"bk102\",\"title\":\"Midnight Rain\",\"publish_date\":\"2000-12-16\"},{\"author\":\"Corets, Eva\",\"price\":5.95,\"genre\":\"Fantasy\",\"description\":\"After the collapse of a nanotechnology society in England, the young survivors lay the foundation for a new society.\",\"id\":\"bk103\",\"title\":\"Maeve Ascendant\",\"publish_date\":\"2000-11-17\"},{\"author\":\"Corets, Eva\",\"price\":5.95,\"genre\":\"Fantasy\",\"description\":\"In post-apocalypse England, the mysterious agent known only as Oberon helps to create a new life for the inhabitants of London. Sequel to Maeve Ascendant.\",\"id\":\"bk104\",\"title\":\"Oberon's Legacy\",\"publish_date\":\"2001-03-10\"},{\"author\":\"Corets, Eva\",\"price\":5.95,\"genre\":\"Fantasy\",\"description\":\"The two daughters of Maeve, half-sisters, battle one another for control of England. Sequel to Oberon's Legacy.\",\"id\":\"bk105\",\"title\":\"The Sundered Grail\",\"publish_date\":\"2001-09-10\"},{\"author\":\"Randall, Cynthia\",\"price\":4.95,\"genre\":\"Romance\",\"description\":\"When Carla meets Paul at ornithology conference, tempers fly as feathers get ruffled.\",\"id\":\"bk106\",\"title\":\"Lover Birds\",\"publish_date\":\"2000-09-02\"},{\"author\":\"Thurman, Paula\",\"price\":4.95,\"genre\":\"Romance\",\"description\":\"A deep sea diver finds true love twenty thousand leagues beneath the sea.\",\"id\":\"bk107\",\"title\":\"Splish Splash\",\"publish_date\":\"2000-11-02\"},{\"author\":\"Knorr, Stefan\",\"price\":4.95,\"genre\":\"Horror\",\"description\":\"An anthology of horror stories about roaches, centipedes, scorpions  and other insects.\",\"id\":\"bk108\",\"title\":\"Creepy Crawlies\",\"publish_date\":\"2000-12-06\"},{\"author\":\"Kress, Peter\",\"price\":6.95,\"genre\":\"Science Fiction\",\"description\":\"After an inadvertant trip through a Heisenberg Uncertainty Device, James Salway discovers the problems of being quantum.\",\"id\":\"bk109\",\"title\":\"Paradox Lost\",\"publish_date\":\"2000-11-02\"},{\"author\":\"O'Brien, Tim\",\"price\":36.95,\"genre\":\"Computer\",\"description\":\"Microsoft's .NET initiative is explored in detail in this deep programmer's reference.\",\"id\":\"bk110\",\"title\":\"Microsoft .NET: The Programming Bible\",\"publish_date\":\"2000-12-09\"},{\"author\":\"O'Brien, Tim\",\"price\":36.95,\"genre\":\"Computer\",\"description\":\"The Microsoft MSXML3 parser is covered in detail, with attention to XML DOM interfaces, XSLT processing, SAX and more.\",\"id\":\"bk111\",\"title\":\"MSXML3: A Comprehensive Guide\",\"publish_date\":\"2000-12-01\"},{\"author\":\"Galos, Mike\",\"price\":49.95,\"genre\":\"Computer\",\"description\":\"Microsoft Visual Studio 7 is explored in depth, looking at how Visual Basic, Visual C++, C#, and ASP+ are integrated into a comprehensive development environment.\",\"id\":\"bk112\",\"title\":\"Visual Studio 7: A Comprehensive Guide\",\"publish_date\":\"2001-04-16\"}]}");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+	}
+	
+    /*
+     * empty key path
+     * expect an exception message : "Error: empty key path"
+     */
+	@Test 
+	public void Task2EmptyPath() {
+		// Given
+		FileReader fileReader;
+		try {
+			fileReader = new FileReader("./src/test/java/org/json/junit/xmls/Sample.xml");
+			JSONPointer jsonPointer = new JSONPointer("");
+			
+			// When
+			JSONObject jsonObject = XML.toJSONObject(fileReader, jsonPointer);
+			
+			// Then
+			assertEquals(jsonObject, "Error: empty key path");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+					e.printStackTrace();
+		}
+	}
+	
+	/*
+     * not existing key path
+     * expect "not exist Object"
+     */
+    @Test
+	public void Task2NotExistTest(){
+		// Given
+		FileReader fileReader;
+		try {
+			fileReader = new FileReader("./src/test/java/org/json/junit/xmls/Sample.xml");
+			JSONPointer jsonPointer = new JSONPointer("/catalog/book/0/Test");
+			
+			// When
+			JSONObject jsonObject = XML.toJSONObject(fileReader, jsonPointer);
+			
+			// Then
+			System.out.println(jsonObject);
+			assertEquals(jsonObject.toString(), "not exist Object");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+    
+   
+	/*
+     * Test Cases for Milestone 2, task5
+     */
+	
+	/*
+	 * replace a given JSONObject parameter on a certain key path given 
+	 * by parameter with XML reader 
+	 * 
+	 */
+	@Test
+	public void Task5shouldreplaceorignalJSONObject() {
+		try {
+//			FileReader samplexmlfile = new FileReader("src\\test\\resources\\Sample.xml");
+			FileReader samplexmlfile = new FileReader("./src/test/java/org/json/junit/xmls/Sample.xml");
+			JSONObject newObj = new JSONObject();
+			newObj.put("Year", 2021);
+			newObj.put("State", "CA");
+			newObj.put("City", "Irivne");
+			newObj.put("Zip", "91706");
+			JSONObject keyObj = new JSONObject();
+			keyObj.put("title", newObj);
+			
+			JSONPointer pointer = new JSONPointer("/catalog/book/0");
+			
+			String correctOutput = "{\"Zip\":\"91706\",\"Year\":2021,\"State\":\"CA\",\"City\":\"Irivne\"}";
+			
+			try {
+				JSONObject test = XML.toJsonobject(samplexmlfile, pointer, keyObj);
+				
+				JSONPointer checkpointer = new JSONPointer("/catalog/book/0");
+				JSONObject testkeyvalue = (JSONObject) checkpointer.queryFrom(test);
+				
+				assertEquals(correctOutput, testkeyvalue.get("title").toString());
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/*
+	 * Invalid key in replace JSONObject
+	 * Expecting a JSONException
+	 * 
+	 */
+	@Test
+	public void Task5keypathNotFound() {
+		
+		try {
+//			FileReader samplexmlfile = new FileReader("src\\test\\resources\\Sample.xml");
+			FileReader samplexmlfile = new FileReader("./src/test/java/org/json/junit/xmls/Sample.xml");
+			JSONObject newObj = new JSONObject();
+			newObj.put("Year", 2021);
+			newObj.put("State", "CA");
+			newObj.put("City", "Irivne");
+			newObj.put("Zip", "91706");
+			JSONObject keyObj = new JSONObject();
+			keyObj.put("abcd", newObj);
+			
+			JSONPointer pointer = new JSONPointer("/catalog/book/0");
+			
+			try {
+				XML.toJsonobject(samplexmlfile, pointer, keyObj);
+				fail("Expecting a JSONException");
+			} catch (JSONException e) {
+				System.err.println(e);
+				assertEquals("Key Not Found Error. The value of key abcd not been successfully replaced!",
+	                    e.getMessage());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/*
+	 * Invalid key in replace JSONObject
+	 * Expecting a JSONException
+	 * 
+	 */
+	@Test
+	public void Task5JSONPointerpathError() {
+		try {
+//			FileReader samplexmlfile = new FileReader("src\\test\\resources\\Sample.xml");
+			FileReader samplexmlfile = new FileReader("./src/test/java/org/json/junit/xmls/Sample.xml");
+			JSONObject newObj = new JSONObject();
+			newObj.put("Year", 2021);
+			newObj.put("State", "CA");
+			newObj.put("City", "Irivne");
+			newObj.put("Zip", "91706");
+			JSONObject keyObj = new JSONObject();
+			keyObj.put("abcd", newObj);
+			
+			JSONPointer pointer = new JSONPointer("/catalog/book/0/ti");
+			
+			
+			try {
+				XML.toJsonobject(samplexmlfile, pointer, keyObj);
+				
+				fail("Expecting a JSONException");
+			} catch (JSONException e) {
+				System.err.println(e);
+				assertEquals("Error! Sub-Object not found!", e.getMessage());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 }

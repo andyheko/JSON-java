@@ -1,3 +1,23 @@
+# 262P Milestone 2
+
+Code modifications are in XML.java from line#875 to the end (task2 starts at line#875, task5 starts at line#1002). Unit Tests are in XMLTest.java from line#1075 to the end (total 7 test cases, 4 for task2, 3 for task5).
+
+## Task2 (part1)
+
+* Read an XML file into a JSON object
+* Extract some smaller sub-object inside
+* Given a certain path (use JSONPointer)
+* Write that smaller object to disk as a JSON file.
+* If found key, stop parsing at key close bracket
+* Return subObject as a JSONObject containing key and its value
+* Throw exception if key not found in XML
+
+# Task5 (part2)
+
+* Read an XML file into a JSON object
+* Replace a sub-object on a certain key path with another JSON object that you construct
+* Then write the result on disk as a JSON file
+
 JSON in Java [package org.json]
 ===============================
 
@@ -13,7 +33,7 @@ The JSON-Java package is a reference implementation that demonstrates how to par
 
 Project goals include:
 * Reliable and consistent results
-* Adherence to the JSON specification 
+* Adherence to the JSON specification
 * Easy to build, use, and include in other projects
 * No external dependencies
 * Fast execution and low memory footprint
@@ -31,7 +51,7 @@ Bug fixes, code improvements, and unit test coverage changes are welcome! Becaus
 # Build Instructions
 
 The org.json package can be built from the command line, Maven, and Gradle. The unit tests can be executed from Maven, Gradle, or individually in an IDE e.g. Eclipse.
- 
+
 **Building from the command line**
 
 *Build the class files from the package root directory src/main/java*
@@ -46,7 +66,7 @@ jar cf json-java.jar org/json/*.class
 
 *Compile a program that uses the jar (see example code below)*
 ````
-javac -cp .;json-java.jar Test.java 
+javac -cp .;json-java.jar Test.java
 ````
 
 *Test file contents*
@@ -62,7 +82,7 @@ public class Test {
 ````
 
 *Execute the Test file*
-```` 
+````
 java -cp .;json-java.jar Test
 ````
 
@@ -72,7 +92,7 @@ java -cp .;json-java.jar Test
 {"abc":"def"}
 ````
 
- 
+
 **Tools to build the package and execute the unit tests**
 
 Execute the test suite with Maven:
@@ -159,18 +179,18 @@ jArr.putAll(new JSONArray(new SomeBean[]{ new SomeBean(3), new SomeBean(4) }));
 
 **Unit Test Conventions**
 
-Test filenames should consist of the name of the module being tested, with the suffix "Test". 
+Test filenames should consist of the name of the module being tested, with the suffix "Test".
 For example, <b>Cookie.java</b> is tested by <b>CookieTest.java</b>.
 
 <b>The fundamental issues with JSON-Java testing are:</b><br>
-* <b>JSONObjects</b> are unordered, making simple string comparison ineffective. 
+* <b>JSONObjects</b> are unordered, making simple string comparison ineffective.
 * Comparisons via **equals()** is not currently supported. Neither <b>JSONArray</b> nor <b>JSONObject</b> override <b>hashCode()</b> or <b>equals()</b>, so comparison defaults to the <b>Object</b> equals(), which is not useful.
 * Access to the <b>JSONArray</b> and <b>JSONObject</b> internal containers for comparison is not currently available.
 
 <b>General issues with unit testing are:</b><br>
-* Just writing tests to make coverage goals tends to result in poor tests. 
+* Just writing tests to make coverage goals tends to result in poor tests.
 * Unit tests are a form of documentation - how a given method works is demonstrated by the test. So for a code reviewer or future developer looking at code a good test helps explain how a function is supposed to work according to the original author. This can be difficult if you are not the original developer.
-*   It is difficult to evaluate unit tests in a vacuum. You also need to see the code being tested to understand if a test is good. 
+*   It is difficult to evaluate unit tests in a vacuum. You also need to see the code being tested to understand if a test is good.
 * Without unit tests, it is hard to feel confident about the quality of the code, especially when fixing bugs or refactoring. Good tests prevent regressions and keep the intent of the code correct.
 * If you have unit test results along with pull requests, the reviewer has an easier time understanding your code and determining if it works as intended.
 
@@ -186,8 +206,8 @@ to produce a vector-like object. The object provides methods for manipulating
 its contents, and for producing a JSON compliant array serialization.
 
 **JSONTokener.java**: The `JSONTokener` breaks a text into a sequence of individual
-tokens. It can be constructed from a `String`, `Reader`, or `InputStream`. It also can 
-parse text from a `String`, `Number`, `Boolean` or `null` like `"hello"`, `42`, `true`, 
+tokens. It can be constructed from a `String`, `Reader`, or `InputStream`. It also can
+parse text from a `String`, `Number`, `Boolean` or `null` like `"hello"`, `42`, `true`,
 `null` to produce a simple json object.
 
 **JSONException.java**: The `JSONException` is the standard exception type thrown
