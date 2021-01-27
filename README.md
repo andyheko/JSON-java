@@ -10,8 +10,8 @@ Code modifications are in XML.java from line#875 to the end (task2 starts at lin
 * Write that smaller object to disk as a JSON file.
 
 Logic :
-* If found key, start parsing and stop at key close bracket
-* If key path value is a JsonArray, then keep parsing until the end of JsonArray
+* If found key, start append parsing and stop at key close bracket
+* If key path value is a JsonArray, then keep append parsing until the end of JsonArray
 * Return subObject as a JSONObject containing key and its value
 * Throw exception if key not found in XML
 
