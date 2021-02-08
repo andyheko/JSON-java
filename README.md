@@ -1,6 +1,26 @@
+# 262P Milestone 3
+Code modifications are in XML.java from line#1114 to the line#1338. Unit Tests are in XMLTest.java from line#1305 to line#1397
+
+Logic:
+private static boolean parseModified(XMLTokener x, JSONObject context, String name, XMLParserConfiguration config, Function<String, String> keyTransformer)
+* Modified from original parse() method
+* Start at line#1117
+* The parseModified() takes an additional Function<String, String> keyTransformer parameter, and applies the function at line#1234 and line#1304 to transform keys in XML files.
+
+static JSONObject toJSONObject(Reader reader, Function<String, String> keyTransformer)
+* Add an overloaded static method to the XML class with the signature
+* Start at line#1326
+* Take an additional Function<String, String> keyTransformer parameter
+* Call the parseModified() method
+
+
+Performance implications:
+Doing the key transformation inside the library enable keys to be transformed during the parsing process of XML files. On the other hand, doing it in client code, as I did in Milestone 1, the key transformation is done after the Json object is created first and then the keys are transformed by parsing the json object, which cost more cpu memory and running power. Therefore, doing the key transformation inside the library is more memory and power efficient.
+
+
 # 262P Milestone 2
 
-Code modifications are in XML.java from line#875 to the end (task2 starts at line#875, task5 starts at line#1021). Unit Tests are in XMLTest.java from line#1075 to the end (total 7 test cases, 4 for task2, 3 for task5).
+Code modifications are in XML.java from line#875 to the line#1112 (task2 starts at line#875, task5 starts at line#1021). Unit Tests are in XMLTest.java from line#1075 to the line#1302 (total 7 test cases, 4 for task2, 3 for task5).
 
 ## Task2 (part1)
 

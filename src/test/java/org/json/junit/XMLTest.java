@@ -41,6 +41,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -1299,4 +1300,98 @@ public class XMLTest {
 		}
 		
 	}
+	
+	
+	// Milestone 3 tests
+	
+	// Test prefix transform
+	/*
+     * Given fileReader to an xml file and a function keyTransformer to add prefix string
+     * Expect a JSONObject with prefix keys
+     */
+	@Test
+	public void M3TestPrefixTransform(){
+		// Given
+		FileReader fileReader;
+		FileReader fileReader2;
+		
+		try {
+			fileReader = new FileReader("./src/test/java/org/json/junit/xmls/Sample.xml");
+			fileReader2 = new FileReader("./src/test/java/org/json/junit/json/Sample_task4.json");
+			
+			Function<String, String> keyTransformer = (String key) -> ("swe262_" + key);
+			
+			// When
+			JSONObject jsonObject = XML.toJSONObject(fileReader, keyTransformer);
+			JSONObject jsonObject2 = new JSONObject(new JSONTokener(fileReader2));
+			
+			// Then
+//			System.out.println(jsonObject);
+//			System.out.println(jsonObject2.toString());
+			assertEquals(jsonObject.toString(), jsonObject2.toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	// Test no transform
+	/*
+     * Given fileReader to an xml file and a function keyTransformer to do nothing
+     * Expect a JSONObject with the same as original JSONObject
+     */
+	@Test
+	public void M3TestNoTransform(){
+		// Given
+		FileReader fileReader;
+		FileReader fileReader2;
+		
+		try {
+			fileReader = new FileReader("./src/test/java/org/json/junit/xmls/Sample.xml");
+			fileReader2 = new FileReader("./src/test/java/org/json/junit/xmls/Sample.xml");
+			
+			Function<String, String> keyTransformer = (String key) -> (key);
+			
+			// When
+			JSONObject jsonObject = XML.toJSONObject(fileReader, keyTransformer);
+			JSONObject jsonObject2 =  XML.toJSONObject(fileReader2);
+			
+			// Then
+//			System.out.println(jsonObject.toString());
+//			System.out.println(jsonObject2.toString());
+			assertEquals(jsonObject.toString(), jsonObject2.toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	// Test Invalid XML
+	/*
+     * Given fileReader to an xml with invalid tag
+     * Expect throwing an JSONexception "Error when parsing xml"
+     */
+	@Test
+	public void M3TestInvalidXmlTransform(){
+		// Given
+		FileReader fileReader;
+		FileReader fileReader2;
+		
+		try {
+			fileReader = new FileReader("./src/test/java/org/json/junit/xmls/InvalidSample.xml");
+			
+			Function<String, String> keyTransformer = (String key) -> (key);
+			
+			// When
+			JSONObject jsonObject = XML.toJSONObject(fileReader, keyTransformer);
+
+			
+			// Then
+		} catch (Exception e) {
+//			e.printStackTrace();
+			assertEquals(e.getMessage(), "Error when parsing xml");
+		}
+	}
+	
+	
 }
