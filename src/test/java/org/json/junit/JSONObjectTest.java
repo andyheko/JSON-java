@@ -50,6 +50,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.json.CDL;
 import org.json.JSONArray;
@@ -3229,5 +3230,48 @@ public class JSONObjectTest {
         jsonObject.clear(); //Clears the JSONObject
         assertTrue("expected jsonObject.length() == 0", jsonObject.length() == 0); //Check if its length is 0
         jsonObject.getInt("key1"); //Should throws org.json.JSONException: JSONObject["asd"] not found
+    }
+
+    /**
+     * 262 Milestone 4
+     * Tests if JSONObject toStream method work properly
+     */
+    @Test
+    public void jsonObejctToStreamTest() {
+        JSONObject obj = XML.toJSONObject("<Books><book><title>AAA</title><author>ASmith</author></book><book><title>BBB</title><author>BSmith</author></book></Books>");
+        List<String> jsonObject_stream = new ArrayList<>();
+        List<String> expected_result_1 = new ArrayList<>();
+        expected_result_1.add("");
+        expected_result_1.add("Books");
+        expected_result_1.add("book");
+        expected_result_1.add("0");
+        expected_result_1.add("author");
+        expected_result_1.add("ASmith");
+        expected_result_1.add("title");
+        expected_result_1.add("AAA");
+        expected_result_1.add("1");
+        expected_result_1.add("author");
+        expected_result_1.add("BSmith");
+        expected_result_1.add("title");
+        expected_result_1.add("BBB");
+
+        List<String> expected_result_2 = new ArrayList<>();
+        expected_result_2.add("AAA");
+        expected_result_2.add("BBB");
+
+        List<String> Stream_test_2 = new ArrayList<>();
+        List<String> expected_result_3 = new ArrayList<>();
+        expected_result_3.add("author");
+        expected_result_3.add("title");
+
+        obj.toStream().forEach(node -> jsonObject_stream.add(node.getkey()));
+        List<String> titles = obj.toStream().filter(node -> node.compareTo("title")).map(node -> (String)node.getvalue()).collect(Collectors.toList());
+        obj.toStream().filter(node -> node.getkey().equals("1")).forEach(node -> node.getchildren().forEach(i -> Stream_test_2.add(i.getkey())));
+
+        assertEquals(expected_result_1, jsonObject_stream);
+        assertEquals(expected_result_2, titles);
+        assertEquals(expected_result_3, Stream_test_2);
+
+
     }
 }

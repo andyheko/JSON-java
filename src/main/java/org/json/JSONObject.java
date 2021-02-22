@@ -36,16 +36,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * A JSONObject is an unordered collection of name/value pairs. Its external
@@ -2611,6 +2605,107 @@ public class JSONObject {
             results.put(entry.getKey(), value);
         }
         return results;
+    }
+
+    /**
+     * 262 Milestone 4
+     * Node class containing all of the entries in this object.
+     * If an entry in the object is a JSONArray or JSONObject it will also
+     * be converted.
+     */
+    public class node{
+        private String key = "";
+        private Object value;
+        private List<node> children = new LinkedList<node>();
+
+        /**
+         *
+         * @param obj initial node class give param JSONObject, and it will automatic convert to Stream
+         */
+        public node (JSONObject obj) {
+            super();
+            for (Entry<String, Object> entry : obj.entrySet()) {
+                this.children.add(new node(entry.getKey(), entry.getValue()));
+            }
+
+        }
+
+        private node (String key, Object value) {
+            this.key = key;
+            this.value = value;
+            if (value == null || NULL.equals(value)){
+                this.children = null;
+            }
+            else if (value instanceof JSONObject) {
+                for(Entry<String, Object> entry : ((JSONObject) value).entrySet()) {
+                    this.children.add(new node(entry.getKey(), entry.getValue()));
+                }
+            }
+            else if (value instanceof JSONArray) {
+                for(int i = 0; i < ((JSONArray)value).length(); i++) {
+                    this.children.add(new node (String.valueOf(i), ((JSONArray)value).get(i)));
+                }
+            }
+            else if (value instanceof String) {
+                this.children.add(new node((String)value));
+            }
+        }
+
+        private node (String key) {
+            this.key = key;
+        }
+
+        /**
+         *
+         * @return List conteins all children nodes
+         */
+        public List<node> getchildren() {
+            return children;
+        }
+
+        /**
+         *
+         * @return String key of JSONObject
+         */
+        public String getkey() {
+            return key;
+        }
+
+        public Object getvalue() {
+            return value;
+        }
+
+        public boolean setnewKey(String newString) {
+            this.key = newString;
+            return true;
+        }
+
+        public boolean compareTo(String compareS) {
+            return this.key.equals(compareS);
+        }
+
+        /**
+         *
+         * @return JSONObject Stream node
+         */
+        public Stream<node> flattened() {
+            return Stream.concat(
+                    Stream.of(this),
+                    children.stream().flatMap(node::flattened));
+        }
+    }
+
+    /**
+     * 262 Milestone 4
+     * Returns a java.util.stream.Stream containing all of the entries in this object.
+     * <p>
+     *
+     * @return a java.util.stream.Stream containing the entries of this object
+     */
+    public Stream<node> toStream() {
+
+        return new node(this).flattened();
+
     }
     
     /**
