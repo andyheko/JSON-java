@@ -3259,19 +3259,22 @@ public class JSONObjectTest {
         expected_result_2.add("AAA");
         expected_result_2.add("BBB");
 
-        List<String> Stream_test_2 = new ArrayList<>();
+        List<String> Stream_test_3 = new ArrayList<>();
         List<String> expected_result_3 = new ArrayList<>();
         expected_result_3.add("author");
         expected_result_3.add("title");
 
-        obj.toStream().forEach(node -> jsonObject_stream.add(node.getkey()));
-        List<String> titles = obj.toStream().filter(node -> node.compareTo("title")).map(node -> (String)node.getvalue()).collect(Collectors.toList());
-        obj.toStream().filter(node -> node.getkey().equals("1")).forEach(node -> node.getchildren().forEach(i -> Stream_test_2.add(i.getkey())));
+        // 1
+        obj.toStream().forEach(node -> jsonObject_stream.add(node.getKey()));
+        // 2
+        List<String> titles = obj.toStream().filter(node -> node.compareTo("title")).map(node -> (String)node.getValue()).collect(Collectors.toList());
+        // 3
+        obj.toStream().filter(node -> node.getKey().equals("1")).forEach(node -> node.getChildren().forEach(i -> Stream_test_3.add(i.getKey())));
 
         assertEquals(expected_result_1, jsonObject_stream);
         assertEquals(expected_result_2, titles);
-        assertEquals(expected_result_3, Stream_test_2);
-
+        assertEquals(expected_result_3, Stream_test_3);
 
     }
+
 }

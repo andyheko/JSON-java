@@ -2622,7 +2622,7 @@ public class JSONObject {
          *
          * @param obj initial node class give param JSONObject, and it will automatic convert to Stream
          */
-        public node (JSONObject obj) {
+        public node(JSONObject obj) {
             super();
             for (Entry<String, Object> entry : obj.entrySet()) {
                 this.children.add(new node(entry.getKey(), entry.getValue()));
@@ -2630,7 +2630,7 @@ public class JSONObject {
 
         }
 
-        private node (String key, Object value) {
+        private node(String key, Object value) {
             this.key = key;
             this.value = value;
             if (value == null || NULL.equals(value)){
@@ -2651,15 +2651,15 @@ public class JSONObject {
             }
         }
 
-        private node (String key) {
+        private node(String key) {
             this.key = key;
         }
 
         /**
          *
-         * @return List conteins all children nodes
+         * @return List contains all children nodes
          */
-        public List<node> getchildren() {
+        public List<node> getChildren() {
             return children;
         }
 
@@ -2667,15 +2667,15 @@ public class JSONObject {
          *
          * @return String key of JSONObject
          */
-        public String getkey() {
+        public String getKey() {
             return key;
         }
 
-        public Object getvalue() {
+        public Object getValue() {
             return value;
         }
 
-        public boolean setnewKey(String newString) {
+        public boolean setNewKey(String newString) {
             this.key = newString;
             return true;
         }
