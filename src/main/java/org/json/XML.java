@@ -51,6 +51,9 @@ import java.util.function.Function;
 @SuppressWarnings("boxing")
 public class XML {
 
+    /** Milestone 5 threadpool */
+    private static ExecutorService threadpool = Executors.newFixedThreadPool(4);
+
     /** The Character '&amp;'. */
     public static final Character AMP = '&';
 
@@ -1357,5 +1360,32 @@ public class XML {
 //    return jo;
 //}
     
-    
+/**
+     * Convert a JSONObject into a well-formed, element-normal XML string.
+     *
+     * @param Reader r
+     *            XML file reader
+     * @param Consumer<JSONObject>
+     *            filewriter function
+     * @param Consumer<Exception>
+     *            throw exception when something wrong
+     * @return A Future<Boolean>. if there is anything wrong with xml process return false excute exception function
+     */
+
+ public static Future<Boolean> toJSONObject(Reader r, Consumer<JSONObject> filewriter, Consumer<Exception> exceptionthrow) {
+	    Future<Boolean> futureTask = threadpool.submit(() -> {
+	    	JSONObject jo = toJSONObject(r);
+	    	
+	    	if(!jo.isEmpty()) {
+	    		filewriter.accept(jo);
+	    		return true;
+	    	}
+	    	else {
+	    		exceptionthrow.accept(new Exception("Something went wrong! "));
+	    		return false;
+	    	}
+	    });
+    	
+    	return futureTask;
+    }   
 }

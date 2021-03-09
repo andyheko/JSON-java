@@ -1393,5 +1393,73 @@ public class XMLTest {
 		}
 	}
 	
-	
+    /*
+    * Test is Asychronous tojsonobject can do asychronous thing
+    */
+	@Test
+    public void M5testToJsonObjectAsychronousworksproperly(){
+    	Boolean check = null;
+    	try(final Writer writer = new FileWriter("../JSON-java-master/src/test/resources/file-output.txt");){
+    		 
+    		BufferedReader br = new BufferedReader(new FileReader("../JSON-java-master/src/test/resources/Big2.xml"));
+    		BufferedReader br2 = new BufferedReader(new FileReader("../JSON-java-master/src/test/resources/Sample.xml"));
+    		
+    		
+    		Future<Boolean> future = XML.toJSONObject(br, (JSONObject jo) -> {jo.write(writer);}, (Exception e) -> {e.printStackTrace();});
+    		Future<Boolean> future2 = null;
+    		if(!future.isDone()) {
+    		    System.out.println("lets read another Sample.xml");
+    		     future2 = XML.toJSONObject(br2, (JSONObject jo) -> {jo.write(writer);}, (Exception e) -> {e.printStackTrace();});
+    		    writer.write("\n");
+    		    //Thread.sleep(300);
+    		}
+    		
+    		if (future2.get() && !future.isDone()) {
+    			check = true;
+    		}
+    		
+    		
+    		
+    	}catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	assertTrue(check);
+    }
+    
+    /*
+    * Test is Asychronous tojsonobject output correctly
+    */
+    @Test
+    public void M5testAsychronousToJSONObjectwillcorrectwritetofile() {
+    	Boolean check = null;
+    	try(final Writer writer = new FileWriter("../JSON-java-master/src/test/resources/test-output.txt");){
+   		 
+    		BufferedReader br = new BufferedReader(new FileReader("../JSON-java-master/src/test/resources/Sample.xml"));
+    		
+    		
+    		Future<Boolean> future = XML.toJSONObject(br, (JSONObject jo) -> {jo.write(writer);}, (Exception e) -> {e.printStackTrace();});
+    		
+    		
+    		check = future.get();
+    		
+    		
+    		
+    	}catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	try(BufferedReader readtest = new BufferedReader(new FileReader("../JSON-java-master/src/test/resources/test-output.txt"))){
+    		BufferedReader br = new BufferedReader(new FileReader("../JSON-java-master/src/test/resources/Sample.xml"));
+    		JSONObject correctresult = XML.toJSONObject(br);
+    		
+    		
+    		assertTrue(check);
+    		assertEquals(readtest.readLine(),correctresult.toString());
+    		
+    		
+    	}catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    }
 }
