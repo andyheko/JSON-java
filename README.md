@@ -1,3 +1,10 @@
+# 262P Milestone 5
+Code modifications are in XML.java from line#1363 to the line#1390 also line#55, and XMLTest.java from line #1430 to line#1462
+
+logic:
+use Future api to make toJsonobject function return task future, in xml class creat threadpool with fix 4 threads. when user want use it can call this tojsonobject return future
+if future hasnt done user can make while loop to do some other thing first
+
 # 262P Milestone 4
 Code modifications are in JSONObject.java from line#2610 to the line#2742, and JSONObjectTest.java from line #3235 to line#3276
 
