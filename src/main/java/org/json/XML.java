@@ -1364,6 +1364,10 @@ public class XML {
 //    return jo;
 //}
     
+    
+    // Milestone 5
+    // Add asynchronous methods to the library that allow the client code to proceed
+    // while specifying what to do when the JSONObject becomes available.
 /**
      * Convert a JSONObject into a well-formed, element-normal XML string.
      *
@@ -1376,16 +1380,16 @@ public class XML {
      * @return A Future<Boolean>. if there is anything wrong with xml process return false excute exception function
      */
 
- public static Future<Boolean> toJSONObject(Reader r, Consumer<JSONObject> filewriter, Consumer<Exception> exceptionthrow) {
+ public static Future<Boolean> toJSONObject(Reader r, Consumer<JSONObject> fileWriter, Consumer<Exception> exceptionThrow) {
 	    Future<Boolean> futureTask = threadpool.submit(() -> {
 	    	JSONObject jo = toJSONObject(r);
 	    	
 	    	if(!jo.isEmpty()) {
-	    		filewriter.accept(jo);
+	    		fileWriter.accept(jo);
 	    		return true;
 	    	}
 	    	else {
-	    		exceptionthrow.accept(new Exception("Something went wrong! "));
+	    		exceptionThrow.accept(new Exception("Something went wrong! "));
 	    		return false;
 	    	}
 	    });

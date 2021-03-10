@@ -1400,7 +1400,7 @@ public class XMLTest {
 	
 	
     /*
-    * Test is Asychronous tojsonobject can do asychronous thing
+    * Test is Asynchronous toJSONObject can do Asynchronous thing
     */
 	@Test
     public void M5testToJsonObjectAsychronousworksproperly(){
@@ -1435,7 +1435,7 @@ public class XMLTest {
 	
     
     /*
-    * Test is Asychronous tojsonobject output correctly
+    * Test is Asynchronous toJSONObject can do Asynchronous thing	
     */
     @Test
     public void M5testAsychronousToJSONObjectwillcorrectwritetofile() {
