@@ -1152,7 +1152,7 @@ public class XMLTest {
 			assertEquals(jsonObject, "Error: empty key path");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-					e.printStackTrace();
+				e.printStackTrace();
 		}
 	}
 	
